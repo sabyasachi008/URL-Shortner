@@ -1,11 +1,14 @@
 const express = require('express');
 
 const router = express.Router();
-
+const URL = require('../models/url')
 
 // '/' -> refers to Home Page
-router.get('/', (req, res)=> {
-    return res.render("home");
+router.get('/', async (req, res)=> {
+    const allurls = await URL.find({});
+    return res.render("home", {
+        urls: allurls,
+    });
 });
 
 

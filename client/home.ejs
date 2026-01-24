@@ -9,6 +9,9 @@
   <body>
     <h2>Design Preview</h2>
     <div class="container bg-primary">
+      <% if (locals.id) { %>
+        <p>URL Generated : http://localhost:8001/url/<%=locals.id%></p>
+      <% } %>
       <form method="POST" action="/url">
         <label>Enter your Original URL</label>
         <input
@@ -18,6 +21,33 @@
           autocomplete="off"
         />
         <button type="submit">Generate</button>
+
+        <div class="tresult">
+          <% if (locals.urls) { %>
+            <table>
+              <thead>
+                
+                  <th>S.No</th>
+                  <th>Short ID</th>
+                  <th>Redirect URL</th>
+                  <th>Clicks</th>
+                
+              </thead>
+              <tbody>
+                <% urls.forEach((url, i) => { %>
+                  <tr>
+                    <td><%=i+1%></td>
+                    <td><%=url.shortId %></td>
+                    
+                    <td><%=url.redirectURL %></td>
+                    <td><%=url.visitHistory.length %></td>
+                  </tr> 
+                    <% }) %>
+                  </tbody>
+            </table>
+           <% } %>
+
+        </div>
       </form>
     </div>
   </body>

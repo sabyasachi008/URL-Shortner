@@ -21,7 +21,7 @@ app.set("views", path.join(__dirname,'../client'))
 
         
 app.use(express.json());        //support json data
-app.use(express.urlencoded({ extended:false}))      // support form data also
+app.use(express.urlencoded({ extended:false}))      // to parse form data we need a middleware -> urlencoded
 app.use("/url", urlRoute);
 app.use("/", staticRoute);
 
