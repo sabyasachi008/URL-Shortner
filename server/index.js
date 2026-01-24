@@ -2,33 +2,44 @@ const express = require('express');
 const { connectToMongoDB } = require('./connect');
 const urlRoute = require('./routes/url');
 const URL = require('./models/url');
-
+const path = require('path')
 const app = express();
-app.use(express.json());
 const PORT = 8001;
+
+const staticRoute = require("./routes/staticRouter");
 
 connectToMongoDB("mongodb://localhost:27017/short-url").then(
     console.log("MongoDB Connected!...")
 )
 
 
-app.get("/test", (req, res) => {
-    return res.end("<h1>Hey from Server Side</h1>");
-});
-app.use("/url", urlRoute);
+app.set("view engine", "ejs");
+//ejs files are basically html files
 
-//Get it from the dB increment the visitedcount and return it to the user
-app.get('/:shortId', async(req, res) => {
+app.set("views", path.join(__dirname,'../client'))
+//telling express that all the ejs files are in client.
+
+        
+app.use(express.json());        //support json data
+app.use(express.urlencoded({ extended:false}))      // support form data also
+app.use("/url", urlRoute);
+app.use("/", staticRoute);
+
+        //Get it from the dB increment the visitedcount and return it to the user
+app.get('/url/:shortId', async (req, res) => {
     const shortId = req.params.shortId;
     const entry = await URL.findOneAndUpdate({
         shortId
     }, {
-        $push:{
+        $push: {
             visitHistory: {
                 timestamp: Date.now(),
             }
         }
-    });
+    }
+    );
+
+    if (!entry) return res.status(404).json({ error: "Short URL not found..." });
 
     res.redirect(entry.redirectURL);
 })
