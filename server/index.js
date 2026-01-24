@@ -11,6 +11,10 @@ connectToMongoDB("mongodb://localhost:27017/short-url").then(
     console.log("MongoDB Connected!...")
 )
 
+
+app.get("/test", (req, res) => {
+    return res.end("<h1>Hey from Server Side</h1>");
+});
 app.use("/url", urlRoute);
 
 //Get it from the dB increment the visitedcount and return it to the user
