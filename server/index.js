@@ -1,12 +1,14 @@
 const express = require('express');
 const { connectToMongoDB } = require('./connect');
-const urlRoute = require('./routes/url');
 const URL = require('./models/url');
 const path = require('path')
 const app = express();
 const PORT = 8001;
 
+//Routes import ->
+const urlRoute = require('./routes/url');
 const staticRoute = require("./routes/staticRouter");
+const userRoute = require('./routes/user')
 
 connectToMongoDB("mongodb://localhost:27017/short-url").then(
     console.log("MongoDB Connected!...")
@@ -24,8 +26,8 @@ app.use(express.json());        //support json data
 app.use(express.urlencoded({ extended:false}))      // to parse form data we need a middleware -> urlencoded
 app.use("/url", urlRoute);
 app.use("/", staticRoute);
+app.use('/user', userRoute);
 
-        //Get it from the dB increment the visitedcount and return it to the user
 app.get('/url/:shortId', async (req, res) => {
     const shortId = req.params.shortId;
     const entry = await URL.findOneAndUpdate({
