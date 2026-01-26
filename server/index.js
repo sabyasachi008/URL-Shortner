@@ -10,10 +10,23 @@ const urlRoute = require('./routes/url');
 const staticRoute = require("./routes/staticRouter");
 const userRoute = require('./routes/user')
 
-connectToMongoDB("mongodb://localhost:27017/short-url").then(
+connectToMongoDB("mongodb://localhost:27017/short-url").then(()=>{
+
     console.log("MongoDB Connected!...")
+}
 )
 
+// connectToMongoDB("mongodb://localhost:27017/short-url")
+//   .then(() => {
+//     console.log("MongoDB Connected!...");
+
+//     app.listen(PORT, () =>
+//       console.log(`Server running at PORT ${PORT}`)
+//     );
+//   })
+//   .catch(err => {
+//     console.error("MongoDB connection failed:", err);
+//   });
 
 app.set("view engine", "ejs");
 //ejs files are basically html files
