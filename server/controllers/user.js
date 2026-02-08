@@ -47,7 +47,7 @@ async function handleUserLogin(req, res) {
     /**
      * Go to inspect element ->  applications tab -> cookie Section after login you should see a cookie if your code is working correctly 
      */
-    console.log(res.cookie("uid", sessionId));
+
     return res.redirect("/");
 }
 

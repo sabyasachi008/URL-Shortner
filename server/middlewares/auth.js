@@ -3,9 +3,37 @@ This is a middleware which restrict to logged in user only.
 Get the userUid from req.cookies.uid
 */
 
-async function restricToLoggedinUserOnly(req, res, next) {
+const { getUser } = require('../service/auth');
 
-    const userUid = req.cookies.uid;
+async function restrictToLoggedinUserOnly(req, res, next) {
 
-    if(!userUid) return res.redirect('/login'); 
+
+    const userUid = req.cookies?.uid;       //run only if exits
+    if(!userUid) return res.redirect('/login');    //redirect to login page
+    const user = getUser(userUid);
+    //Incase of UserId not present
+    if(!user) {
+        return res.redirect('/login');
+
+    }
+
+    req.user = user;            //add the user in that request Object
+    next();
+
+}
+async function checkAuth(req, res, next) {
+    const userUid = req.cookies?.uid;       //run only if exits
+    
+    const user = getUser(userUid);
+    //Incase of UserId not present
+    req.user = user;
+
+    next();
+
+
+}
+
+module.exports = {
+    restrictToLoggedinUserOnly,
+    checkAuth,
 }

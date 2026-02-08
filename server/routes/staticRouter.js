@@ -5,7 +5,8 @@ const URL = require('../models/url')
 
 // '/' -> refers to Home Page
 router.get('/', async (req, res)=> {
-    const allurls = await URL.find({});
+    if(!req.user) return res.redirect('/login')
+    const allurls = await URL.find({ createdBy: req.user._id });        //return the urls for the particular user.
     return res.render("home", {
         urls: allurls,
     });
