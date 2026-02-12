@@ -39,11 +39,10 @@ async function handleUserLogin(req, res) {
     }
 
     
-    const sessionId = uuidv4();
-    //we have to store the sessionID with the user Object
-    setUser(sessionId, user);
+ 
+    const token = setUser(user);
     //Now create a cookie
-    res.cookie('uid', sessionId);           //so see the cookie in the browser
+    res.cookie('uid', token);           //so see the cookie in the browser
     /**
      * Go to inspect element ->  applications tab -> cookie Section after login you should see a cookie if your code is working correctly 
      */
