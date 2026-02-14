@@ -37,16 +37,15 @@ async function handleUserLogin(req, res) {
             error: "Invalid Credentials"
         });
     }
-
-    
- 
     const token = setUser(user);
+    //we have to store the sessionID with the user Object
+    // setUser(sessionId, user);
     //Now create a cookie
-    res.cookie('uid', token);           //so see the cookie in the browser
+    res.cookie('token', token);           //so see the cookie in the browser
     /**
      * Go to inspect element ->  applications tab -> cookie Section after login you should see a cookie if your code is working correctly 
      */
-
+    // console.log("sessionID ", sessionId);
     return res.redirect("/");
 }
 

@@ -10,13 +10,12 @@ const urlRoute = require('./routes/url');
 const staticRoute = require("./routes/staticRouter");
 const userRoute = require('./routes/user')
 const cookieParser = require('cookie-parser');
-const { restrictToLoggedinUserOnly,checkAuth } = require('./middlewares/auth');
+const { checkForAuthentication, restrictTo } = require('./middlewares/auth');
 
 connectToMongoDB("mongodb://localhost:27017/short-url").then(()=>{
 
     console.log("MongoDB Connected!...")
-}
-)
+})
 
 // connectToMongoDB("mongodb://localhost:27017/short-url")
 //   .then(() => {
@@ -44,9 +43,10 @@ app.use(express.urlencoded({ extended:false}))      // to parse form data we nee
 /*This is a inline middle ware which only work when the request would come to /url .
 Basically to access any-thing inside /url route we have to be logged in
 */
-app.use("/url", restrictToLoggedinUserOnly, urlRoute);      //This route would be ristricted to login User only
-app.use("/", checkAuth, staticRoute);
+app.use(checkForAuthentication)
+app.use("/url", restrictTo(["NORMAL"]), urlRoute);
 app.use('/user', userRoute);
+app.use("/",  staticRoute);
 
 app.get('/url/:shortId', async (req, res) => {
     const shortId = req.params.shortId;

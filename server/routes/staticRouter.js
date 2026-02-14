@@ -1,12 +1,21 @@
 const express = require('express');
 
 const router = express.Router();
+const { restrictTo } = require('../middlewares/auth');
 const URL = require('../models/url')
-
 // '/' -> refers to Home Page
-router.get('/', async (req, res)=> {
-    if(!req.user) return res.redirect('/login')
-    const allurls = await URL.find({ createdBy: req.user._id });        //return the urls for the particular user.
+
+
+router.get('/admin/urls', restrictTo(['ADMIN']), async(req, res)=> {
+    const allurls = await URL.find({});
+    return res.render("home", {
+        urls: allurls,
+    });
+});
+
+//restrictTo(["NORMAL"])-> Inline Middleware 
+router.get('/', restrictTo(["NORMAL", "ADMIN"]), async (req, res)=> {
+    const allurls = await URL.find({ createdBy: req.user._id });
     return res.render("home", {
         urls: allurls,
     });

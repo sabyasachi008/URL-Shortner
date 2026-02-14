@@ -5,35 +5,45 @@ Get the userUid from req.cookies.uid
 
 const { getUser } = require('../service/auth');
 
-async function restrictToLoggedinUserOnly(req, res, next) {
-
-
-    const userUid = req.cookies?.uid;       //run only if exits
-    if(!userUid) return res.redirect('/login');    //redirect to login page
-    const user = getUser(userUid);
-    //Incase of UserId not present
-    if(!user) {
-        return res.redirect('/login');
-
+//This is authentication 
+function checkForAuthentication(req, res, next) {
+    const tokenCookie = req.cookies?.token;
+    req.user = null;        //Initially request.user doestn't exists
+    
+    //if no authorization header is present or it doesn't start with "Bearer "
+    //If authorizationHeader doesn't exits or doesn't starts with Bearer then call the next function
+    if(!tokenCookie) {
+        return next();  //move to next middleware
     }
 
-    req.user = user;            //add the user in that request Object
-    next();
+    const token = tokenCookie;    //extract the token value
+    try {
+        const user = getUser(token);
+        
+        req.user = user;
 
+    } catch (error) {
+        req.user = null;
+    }
+
+    return next();
 }
-async function checkAuth(req, res, next) {
-    const userUid = req.cookies?.uid;       //run only if exits
-    
-    const user = getUser(userUid);
-    //Incase of UserId not present
-    req.user = user;
 
-    next();
-
-
+//this is authorisation 
+function restrictTo(roles = []) {
+    return function(req, res, next ) {
+        
+        if(!req.user) {
+            return res.redirect('/login');
+        }
+        if(!roles.includes(req.user.role)) {
+            return res.end("Unauthorized");
+        }
+        return next();
+    }
 }
 
 module.exports = {
-    restrictToLoggedinUserOnly,
-    checkAuth,
+    checkForAuthentication,
+    restrictTo,
 }
